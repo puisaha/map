@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Map Project</title>
+    <link href="css/map.css" rel="stylesheet">
+  
+  </head>
+  <body>
+    <table class="height100">
+      <tr class="height100">
+        <td id="left" class="height100">
+          <div id="location">BART LOCATION </div>
+          <table>
+            <tr>
+              <td id="search_box">
+                <!-- <input class="search-box" type="search" data-bind="textInput: filter"> -->
+                <input id="places-search" type="search" placeholder="Ex: Parks" data-bind="textInput: filterText">  
+              </td> 
+              <td id="filter_box">
+                <input id="filter" type="button" value="filter" data-bind="click: filtering" >
+              </td>  
+            </tr>  
+          </table>     
+          <!-- <ul data-bind="foreach: model().locations()"> -->
+          <ul data-bind="foreach: filter_location">
+            <li data-bind="text: $data.title"></li>
+          </ul>
+        </td>
+        <td id="right" class="height100">
+          <div id="map" class="height100 width100"></div>
+        </td>
+      </tr>
+    </table>    
+
+    <script src="js/knockout-3.4.2.js"></script>
+    <script 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBS9tg_4eOjFTUaVUzZYl9q6t6aUseMC-Q">
+    </script>
+    <script src="js/map.js"></script>
+
+  </body>
+
+</html>
