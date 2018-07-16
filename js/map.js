@@ -38,6 +38,7 @@ var ViewModel = function(){
 	this.view =  new View();
 
 	this.filterText = ko.observable('');
+
 	
 	this.initMap = function () {
 		// Constructor creates a new map - only center and zoom are required.
@@ -55,7 +56,10 @@ var ViewModel = function(){
 
 		// Get the position from the location array.
 		    var position = this.filter_location()[i].location;
+		    //location: {lat: 42.9960594, lng: -89.568889}
+		    
 		    var title = this.filter_location()[i].title;
+
 		    // Create a marker per location, and put into markers array.
 		    var marker = new google.maps.Marker({
 		        map: this.view.map,
@@ -65,8 +69,11 @@ var ViewModel = function(){
 		        id: i
 		     });
 		    // Push the marker to our array of markers.
-		    //this.view().markers().push(marker);
 		    this.view.markers.push(marker);
+		    this.FoursquareInfo = function(marker) {
+			    
+		    };
+
 
 		    var populateInfoWindow = this.populateInfoWindow;
 		    var largeInfowindow = this.view.largeInfowindow;
@@ -84,11 +91,33 @@ var ViewModel = function(){
 	// one infowindow which will open at the marker that is clicked, and populate based
 	// on that markers position.
 	this.populateInfoWindow = function (marker, infowindow) {
+		var lat = marker.position.lat();
+		var long = marker.position.lng();
+		var latlong = lat +","+ long ;
+		//console.log(latlong);
 	    // Check to make sure the infowindow is not already opened on this marker.
 	    if (infowindow.marker != marker) {
 	        infowindow.marker = marker;
-	        infowindow.setContent('<div>' + marker.title + '</div>');
-	        infowindow.open(marker.map, marker);
+	        var url = 'https://api.foursquare.com/v2/venues/search?ll=' + latlong + '&client_id=OFPDBI3PEIOE1QBLIIR5A1GZS1Q5UDWWKTGTHAYOXVOQ2ZVY&client_secret=GRXLCYLQAR2IBA33G1DNWJBFPBBWYAEDW2PLTGKUZBOUAEXR&v=20180715'
+		    //GET https://api.foursquare.com/v2/venues/search
+		    var info;
+
+		    $.getJSON(url, function(data){
+		    	var result = data.response.venues;
+	            var name = result[0].name;
+	            var pic = result[0].categories[0].icon["prefix"];
+	            var picture = pic + ".png";
+
+	            info ='<div>'+ name + '</div>' + '<img src=' + picture + '></img>';
+	            console.log(picture);	
+
+	            infowindow.setContent('<div>' + info + '</div>');
+	        	infowindow.open(marker.map, marker);
+	        
+		    }).error(function(e){
+            
+    		});
+	        
 	        // Make sure the marker property is cleared if the infowindow is closed.
 	        infowindow.addListener('closeclick',function(){
 	           infowindow.setMarker = null;
