@@ -17,7 +17,6 @@ var Model = function(){
 
 var View = function(){
 	this.markers = [];
-	//this.markers = ko.observableArray();
 
 	this.map = new google.maps.Map(document.getElementById('map'), {
 	  center: {lat: 43.0498933, lng: -89.5073649},
@@ -26,7 +25,6 @@ var View = function(){
 
 	this.largeInfowindow = new google.maps.InfoWindow();
 
-	//var largeInfowindow = new google.maps.InfoWindow({content: contentString});
 	this.bounds = new google.maps.LatLngBounds();
 }
 
@@ -49,14 +47,12 @@ var ViewModel = function(){
 		for (var i = 0; i < this.model().locations_original().length; i++) {
 			this.filter_location.push(this.model().locations_original()[i]);
 		}
-		// this.filter_location = this.model().locations_original;
 
 
 		for (var i = 0; i < this.filter_location().length; i++) {
 
-		// Get the position from the location array.
+			// Get the position from the location array.
 		    var position = this.filter_location()[i].location;
-		    //location: {lat: 42.9960594, lng: -89.568889}
 		    
 		    var title = this.filter_location()[i].title;
 
@@ -68,11 +64,9 @@ var ViewModel = function(){
 		        animation: google.maps.Animation.DROP,
 		        id: i
 		     });
+		    //marker.visibleMarker(true);
 		    // Push the marker to our array of markers.
 		    this.view.markers.push(marker);
-		    this.FoursquareInfo = function(marker) {
-			    
-		    };
 
 
 		    var populateInfoWindow = this.populateInfoWindow;
@@ -81,10 +75,13 @@ var ViewModel = function(){
 		    marker.addListener('click', function() {
 		      	populateInfoWindow(this, largeInfowindow);
 		    });
+		
+
 		    this.view.bounds.extend(this.view.markers[i].position);
 		}
 		// Extend the boundaries of the map for each marker
 		this.view.map.fitBounds(this.view.bounds);
+
 	};
 
 	// This function populates the infowindow when the marker is clicked. We'll only allow
@@ -94,21 +91,23 @@ var ViewModel = function(){
 		var lat = marker.position.lat();
 		var long = marker.position.lng();
 		var latlong = lat +","+ long ;
-		//console.log(latlong);
+
 	    // Check to make sure the infowindow is not already opened on this marker.
 	    if (infowindow.marker != marker) {
 	        infowindow.marker = marker;
 	        var url = 'https://api.foursquare.com/v2/venues/search?ll=' + latlong + '&client_id=OFPDBI3PEIOE1QBLIIR5A1GZS1Q5UDWWKTGTHAYOXVOQ2ZVY&client_secret=GRXLCYLQAR2IBA33G1DNWJBFPBBWYAEDW2PLTGKUZBOUAEXR&v=20180715'
-		    //GET https://api.foursquare.com/v2/venues/search
 		    var info;
 
 		    $.getJSON(url, function(data){
 		    	var result = data.response.venues;
 	            var name = result[0].name;
 	            var pic = result[0].categories[0].icon["prefix"];
+	            var address = result[0].location.formattedAddress[0];
+	            console.log(address);
 	            var picture = pic + ".png";
 
-	            info ='<div>'+ name + '</div>' + '<img src=' + picture + '></img>';
+	            //info ='<div>'+ name + '</div>' + '<img src=' + picture + '></img>';
+	            info ='<div>'+ name + '</div>' + '<div>' + address + '</div>';
 	            console.log(picture);	
 
 	            infowindow.setContent('<div>' + info + '</div>');
@@ -129,7 +128,6 @@ var ViewModel = function(){
 	this.filtering = function(){
 		var word = this.filterText();
 		this.locations = this.model().locations_original;
-		//console.log(this.locations().length);
 		
 		this.filter_location.removeAll();
 
@@ -137,9 +135,26 @@ var ViewModel = function(){
 			console.log(typeof this.locations()[i]);
 			if (this.locations()[i].title.indexOf(word) !== -1){
 				console.log("matched " + this.locations()[i].title + " with " + word);
+
 				this.filter_location.push(this.locations()[i]);
+
 			}
 		}
+	}
+
+	var largeInfowindow = this.view.largeInfowindow;
+	this.printAB = function(){
+		//console.log(this.title);
+		//console.log(vm.view.markers[0].title);
+		for(var i =0; i<vm.view.markers.length; i++){
+			//console.log(vm.view.markers[i].title);
+			if (this.title === vm.view.markers[i].title){
+				
+				vm.populateInfoWindow(vm.view.markers[i], largeInfowindow);
+			}
+		}
+		
+
 	}
 
 }

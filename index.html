@@ -23,7 +23,7 @@
           </table>     
           <!-- <ul data-bind="foreach: model().locations()"> -->
           <ul data-bind="foreach: filter_location">
-            <li data-bind="text: $data.title"></li>
+            <li data-bind="text: $data.title , click: $parent.printAB"></li>
           </ul>
         </td>
         <td id="right" class="height100">
