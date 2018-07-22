@@ -67,6 +67,8 @@ var ViewModel = function(){
 		    //marker.visibleMarker(true);
 		    // Push the marker to our array of markers.
 		    this.view.markers.push(marker);
+		    // if(i === 2) marker.visible = false;
+		    // console.log(marker);
 
 
 		    var populateInfoWindow = this.populateInfoWindow;
@@ -123,7 +125,11 @@ var ViewModel = function(){
 	        });
 	    }
 	};
-
+	
+  	// This function will loop through the listings and hide them all.
+  	this.hideMarkers = function(marker) {
+     	marker.setMap(null);
+  	}
 
 	this.filtering = function(){
 		var word = this.filterText();
@@ -132,16 +138,21 @@ var ViewModel = function(){
 		this.filter_location.removeAll();
 
 		for(var i =0; i<this.locations().length; i++){
-			console.log(typeof this.locations()[i]);
-			if (this.locations()[i].title.indexOf(word) !== -1){
+			//console.log(typeof this.locations()[i]);
+			if (this.locations()[i].title.toLowerCase().indexOf(word.toLowerCase()) !== -1){
 				console.log("matched " + this.locations()[i].title + " with " + word);
-
+				console.log();
+				
 				this.filter_location.push(this.locations()[i]);
-
+				
+				
+			}
+			else{
+				vm.hideMarkers(vm.view.markers[i]);
 			}
 		}
 	}
-
+	// printAB fn for connecting list with markers info
 	var largeInfowindow = this.view.largeInfowindow;
 	this.printAB = function(){
 		//console.log(this.title);
@@ -149,7 +160,7 @@ var ViewModel = function(){
 		for(var i =0; i<vm.view.markers.length; i++){
 			//console.log(vm.view.markers[i].title);
 			if (this.title === vm.view.markers[i].title){
-				
+
 				vm.populateInfoWindow(vm.view.markers[i], largeInfowindow);
 			}
 		}
